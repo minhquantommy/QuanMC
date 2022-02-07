@@ -1,3 +1,5 @@
-## QuanMC | The dumbest fork ever
+## QuanMC | A custom fork for CircusMC
 
-Currently on working
+Currently on working.
+
+Discord.gg/circussmp
