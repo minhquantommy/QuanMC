@@ -1,0 +1,30 @@
+From 4dab1d8b49fe0aec95bae1b15a19d6997ad2526b Mon Sep 17 00:00:00 2001
+From: DerFlash <bte@freenet.de>
+Date: Tue, 9 Jul 2013 00:11:12 +0200
+Subject: [PATCH] Save ticks lived to nbttag
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 7fd90e8d6..3b88929fe 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -1742,6 +1742,7 @@ public abstract class Entity implements INamableTileEntity, EntityAccess, IComma
+             if (maxAirTicks != getDefaultMaxAirSupply()) {
+                 nbttagcompound.putInt("Bukkit.MaxAirSupply", getMaxAirSupply());
+             }
++            nbttagcompound.putInt("Spigot.ticksLived", this.tickCount);
+             // CraftBukkit end
+             IChatBaseComponent ichatbasecomponent = this.getCustomName();
+ 
+@@ -1901,6 +1902,8 @@ public abstract class Entity implements INamableTileEntity, EntityAccess, IComma
+             if (this instanceof EntityLiving) {
+                 EntityLiving entity = (EntityLiving) this;
+ 
++                this.tickCount = nbttagcompound.getInt("Spigot.ticksLived");
++
+                 // Reset the persistence for tamed animals
+                 if (entity instanceof EntityTameableAnimal && !isLevelAtLeast(nbttagcompound, 2) && !nbttagcompound.getBoolean("PersistenceRequired")) {
+                     EntityInsentient entityinsentient = (EntityInsentient) entity;
+-- 
+2.25.1
+

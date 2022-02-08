@@ -1,0 +1,47 @@
+From a7423e12a6d43a14cba9b8011b523d6344575bcf Mon Sep 17 00:00:00 2001
+From: md_5 <md_5@live.com.au>
+Date: Sun, 22 Sep 2013 19:10:53 +1000
+Subject: [PATCH] Item Despawn Rate
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/item/EntityItem.java b/src/main/java/net/minecraft/world/entity/item/EntityItem.java
+index 8e802dc2d..4d76a2946 100644
+--- a/src/main/java/net/minecraft/world/entity/item/EntityItem.java
++++ b/src/main/java/net/minecraft/world/entity/item/EntityItem.java
+@@ -172,7 +172,7 @@ public class EntityItem extends Entity {
+                 }
+             }
+ 
+-            if (!this.level.isClientSide && this.age >= 6000) {
++            if (!this.level.isClientSide && this.age >= level.spigotConfig.itemDespawnRate) { // Spigot
+                 // CraftBukkit start - fire ItemDespawnEvent
+                 if (org.bukkit.craftbukkit.event.CraftEventFactory.callItemDespawnEvent(this).isCancelled()) {
+                     this.age = 0;
+@@ -502,7 +502,7 @@ public class EntityItem extends Entity {
+ 
+     public void makeFakeItem() {
+         this.setNeverPickUp();
+-        this.age = 5999;
++        this.age = level.spigotConfig.itemDespawnRate - 1; // Spigot
+     }
+ 
+     public float getSpin(float f) {
+diff --git a/src/main/java/org/spigotmc/SpigotWorldConfig.java b/src/main/java/org/spigotmc/SpigotWorldConfig.java
+index 55af2f874..9fc17f219 100644
+--- a/src/main/java/org/spigotmc/SpigotWorldConfig.java
++++ b/src/main/java/org/spigotmc/SpigotWorldConfig.java
+@@ -181,4 +181,11 @@ public class SpigotWorldConfig
+         mobSpawnRange = (byte) getInt( "mob-spawn-range", 6 );
+         log( "Mob Spawn Range: " + mobSpawnRange );
+     }
++
++    public int itemDespawnRate;
++    private void itemDespawnRate()
++    {
++        itemDespawnRate = getInt( "item-despawn-rate", 6000 );
++        log( "Item Despawn Rate: " + itemDespawnRate );
++    }
+ }
+-- 
+2.25.1
+

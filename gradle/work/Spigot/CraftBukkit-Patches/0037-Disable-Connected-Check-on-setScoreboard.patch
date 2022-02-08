@@ -1,0 +1,22 @@
+From 6ad20e3e1aab4126f98cc14ea3ed839a75a69f43 Mon Sep 17 00:00:00 2001
+From: md_5 <git@md-5.net>
+Date: Mon, 23 Dec 2013 15:57:57 +1100
+Subject: [PATCH] Disable Connected Check on setScoreboard
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index c2e025013..370da9417 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1550,7 +1550,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+             throw new IllegalStateException("Cannot set scoreboard yet");
+         }
+         if (playerConnection.isDisconnected()) {
+-            throw new IllegalStateException("Cannot set scoreboard for invalid CraftPlayer");
++            // throw new IllegalStateException("Cannot set scoreboard for invalid CraftPlayer"); // Spigot - remove this as Mojang's semi asynchronous Netty implementation can lead to races
+         }
+ 
+         this.server.getScoreboardManager().setPlayerBoard(this, scoreboard);
+-- 
+2.25.1
+

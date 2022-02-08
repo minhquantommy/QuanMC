@@ -1,0 +1,44 @@
+From 7a33054418b741f57b4c7a5f282d8374aa767c94 Mon Sep 17 00:00:00 2001
+From: md_5 <md_5@live.com.au>
+Date: Thu, 27 Jun 2013 17:26:09 +1000
+Subject: [PATCH] Properly Close Inventories
+
+Properly close inventories when unloading and switching worlds.
+
+diff --git a/src/main/java/net/minecraft/server/level/WorldServer.java b/src/main/java/net/minecraft/server/level/WorldServer.java
+index 889e9a488..427c9fdbd 100644
+--- a/src/main/java/net/minecraft/server/level/WorldServer.java
++++ b/src/main/java/net/minecraft/server/level/WorldServer.java
+@@ -1019,6 +1019,15 @@ public class WorldServer extends World implements GeneratorAccessSeed {
+     }
+ 
+     public void unload(Chunk chunk) {
++        // Spigot Start
++        for (net.minecraft.world.level.block.entity.TileEntity tileentity : chunk.getBlockEntities().values()) {
++            if (tileentity instanceof net.minecraft.world.IInventory) {
++                for (org.bukkit.entity.HumanEntity h : Lists.newArrayList(((net.minecraft.world.IInventory) tileentity).getViewers())) {
++                    h.closeInventory();
++                }
++            }
++        }
++        // Spigot End
+         chunk.clearAllBlockEntities();
+         chunk.unregisterTickContainerFromLevel(this);
+     }
+@@ -1905,6 +1914,13 @@ public class WorldServer extends World implements GeneratorAccessSeed {
+ 
+         public void onTrackingEnd(Entity entity) {
+             org.spigotmc.AsyncCatcher.catchOp("entity unregister"); // Spigot
++            // Spigot Start
++            if (entity.getBukkitEntity() instanceof org.bukkit.inventory.InventoryHolder && (!(entity instanceof EntityPlayer) || entity.getRemovalReason() != Entity.RemovalReason.KILLED)) { // SPIGOT-6876: closeInventory clears death message
++                for (org.bukkit.entity.HumanEntity h : Lists.newArrayList(((org.bukkit.inventory.InventoryHolder) entity.getBukkitEntity()).getInventory().getViewers())) {
++                    h.closeInventory();
++                }
++            }
++            // Spigot End
+             WorldServer.this.getChunkSource().removeEntity(entity);
+             if (entity instanceof EntityPlayer) {
+                 EntityPlayer entityplayer = (EntityPlayer) entity;
+-- 
+2.25.1
+

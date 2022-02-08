@@ -1,0 +1,61 @@
+From 90e84cdcb27f4f178453f1e5b6105427fee3873e Mon Sep 17 00:00:00 2001
+From: md_5 <md_5@live.com.au>
+Date: Sat, 8 Feb 2014 08:13:40 +0000
+Subject: [PATCH] Spam Filter Exclusions
+
+
+diff --git a/src/main/java/net/minecraft/server/network/PlayerConnection.java b/src/main/java/net/minecraft/server/network/PlayerConnection.java
+index c64487abc..ec66c1233 100644
+--- a/src/main/java/net/minecraft/server/network/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/network/PlayerConnection.java
+@@ -1783,9 +1783,20 @@ public class PlayerConnection implements ServerPlayerConnection, PacketListenerP
+                 }, ChatMessageType.CHAT, this.player.getUUID());
+             }
+ 
++            // Spigot start - spam exclusions
++            boolean counted = true;
++            for ( String exclude : org.spigotmc.SpigotConfig.spamExclusions )
++            {
++                if ( exclude != null && s.startsWith( exclude ) )
++                {
++                    counted = false;
++                    break;
++                }
++            }
++            // Spigot end
+             // CraftBukkit start - replaced with thread safe throttle
+             // this.chatSpamTickCount += 20;
+-            if (chatSpamTickCount.addAndGet(20) > 200 && !this.server.getPlayerList().isOp(this.player.getGameProfile())) {
++            if (counted && chatSpamTickCount.addAndGet(20) > 200 && !this.server.getPlayerList().isOp(this.player.getGameProfile())) { // Spigot
+                 if (!isSync) {
+                     Waitable waitable = new Waitable() {
+                         @Override
+diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
+index 9acc8feb7..e17e857e9 100644
+--- a/src/main/java/org/spigotmc/SpigotConfig.java
++++ b/src/main/java/org/spigotmc/SpigotConfig.java
+@@ -6,6 +6,7 @@ import java.io.IOException;
+ import java.lang.reflect.InvocationTargetException;
+ import java.lang.reflect.Method;
+ import java.lang.reflect.Modifier;
++import java.util.Arrays;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+@@ -284,4 +285,13 @@ public class SpigotConfig
+     {
+         playerShuffle = getInt( "settings.player-shuffle", 0 );
+     }
++
++    public static List<String> spamExclusions;
++    private static void spamExclusions()
++    {
++        spamExclusions = getList( "commands.spam-exclusions", Arrays.asList( new String[]
++        {
++                "/skill"
++        } ) );
++    }
+ }
+-- 
+2.25.1
+
